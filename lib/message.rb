@@ -1,6 +1,25 @@
 require 'mapi/msg'
 require 'pry'
 
+class Attachment
+  attr_reader :attachment
+
+  def initialize(attachment)
+    @attachment = attachment
+  end
+
+  def filename
+    attachment.filename
+  end
+
+  def write_to(path)
+    data = attachment.data
+    data.rewind
+
+    File.open(path, "wb") { |f| f.write(data.read) }
+  end
+end
+
 class Message
   attr_reader :path, :msg
 
@@ -13,21 +32,27 @@ class Message
     msg.subject
   end
 
+  def attachments
+    @attachments ||= msg.attachments.map { |attachment| Attachment.new(attachment) }
+  end
+
   def plain_body
-    plain = body
-      .split(boundary)
-      .detect { |chunk| chunk.include?("Content-Type: text/plain") }
-      .to_s
+    @plain_body ||= begin
+      plain = body
+        .split(boundary)
+        .detect { |chunk| chunk.include?("Content-Type: text/plain") }
+        .to_s
 
-    plain.gsub!(/Content-Type: text\/plain/, '')
-    plain.gsub!(/\r/, '')
-    plain.gsub!(/\n\s+\n/, "\n\n")
-    plain.gsub!(/\n{3,}/, "\n\n")
+      plain.gsub!(/Content-Type: text\/plain/, '')
+      plain.gsub!(/\r/, '')
+      plain.gsub!(/\n\s+\n/, "\n\n")
+      plain.gsub!(/\n{3,}/, "\n\n")
 
-    fix_word_chars!(plain)
-    plain.strip!
+      fix_word_chars!(plain)
+      plain.strip!
 
-    plain
+      plain
+    end
   end
 
   private

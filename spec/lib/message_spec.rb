@@ -14,4 +14,10 @@ describe Message do
       expect(message.plain_body).to match(/^Hello Councilmembers:/)
     end
   end
+
+  describe '#attachments' do
+    it "should return a list of attachments" do
+      expect(message.attachments.size).to eq(2)
+    end
+  end
 end
