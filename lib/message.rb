@@ -46,6 +46,7 @@ class Message
     #   http://www.meridiandiscovery.com/how-to/e-mail-conversation-index-metadata-computer-forensics/
     #   http://forum.rebex.net/3841/how-to-interprete-thread-index-header/
     #   https://stackoverflow.com/questions/31844321/how-to-convert-a-base64-encoded-string-to-uuid-format
+    #   https://www.jwz.org/doc/threading.html
     @thread_id = index
       .unpack("m0")
       .first
