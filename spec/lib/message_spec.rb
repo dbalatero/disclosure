@@ -42,4 +42,18 @@ describe Message do
       )
     end
   end
+
+  describe '#sender' do
+    it "should return the sender" do
+      expect(message.sender.name).to eq("Cortes, Katherine")
+      expect(message.sender.email).to eq("katherine.cortes@kingcounty.gov")
+    end
+  end
+
+  describe '#recipient' do
+    it "should return the recipient" do
+      expect(message.recipient.name).to eq("ZZGrp, Council Members")
+      expect(message.recipient.email).to eq("zzcncmembers@kingcounty.gov")
+    end
+  end
 end
