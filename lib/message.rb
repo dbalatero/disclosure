@@ -51,6 +51,16 @@ class Person
 end
 
 class Message
+  CC_LIST_REGEX = /
+    (?:     # Begin non-capture group
+    (?<=\") # Match a double-quote in a positive lookbehind
+    .+?     # Match one or more characters lazily
+    (?=\")  # Match a double quote in a positive lookahead
+    )       # End non-capture group
+    |       # Or
+    \s\d+   # Match a whitespace character followed by one or more digits
+    /x      # Extended mode
+
   attr_reader :path, :msg
 
   def initialize(path)
@@ -64,6 +74,18 @@ class Message
 
   def recipient
     @recipient ||= Person.new(msg.to)
+  end
+
+  def cc
+    @cc ||= begin
+      temp_comma_replacement = 9679.chr(Encoding::UTF_8)
+
+      msg
+        .cc
+        .gsub(/(".+?),(.+?")/, "\\1#{temp_comma_replacement}\\2")
+        .split(/,\s*/)
+        .map { |line| Person.new(line.gsub(temp_comma_replacement, ',')) }
+    end
   end
 
   def subject

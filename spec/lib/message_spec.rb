@@ -56,4 +56,13 @@ describe Message do
       expect(message.recipient.email).to eq("zzcncmembers@kingcounty.gov")
     end
   end
+
+  describe '#cc' do
+    it "should return a list of CC'd people" do
+      expect(message.cc.size).to eq(14)
+
+      expect(message.cc[0].name).to eq("Domingo, Cindy")
+      expect(message.cc[0].email).to eq("cindy.domingo@kingcounty.gov")
+    end
+  end
 end
