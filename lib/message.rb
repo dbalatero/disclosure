@@ -36,6 +36,31 @@ class Message
     @attachments ||= msg.attachments.map { |attachment| Attachment.new(attachment) }
   end
 
+  def thread_id
+    return @thread_id if defined?(@thread_id)
+
+    index = msg.headers['Thread-Index'].first
+    return nil if index.nil?
+
+    # Uh, see:
+    #   http://www.meridiandiscovery.com/how-to/e-mail-conversation-index-metadata-computer-forensics/
+    #   http://forum.rebex.net/3841/how-to-interprete-thread-index-header/
+    #   https://stackoverflow.com/questions/31844321/how-to-convert-a-base64-encoded-string-to-uuid-format
+    @thread_id = index
+      .unpack("m0")
+      .first
+      .unpack("A6H8H4H4H4H12")[1..-1]
+      .join("-")
+  end
+
+  def message_id
+    msg.headers['Message-ID'].first rescue nil
+  end
+
+  def in_reply_to
+    msg.headers['In-Reply-To'].first rescue nil
+  end
+
   def plain_body
     @plain_body ||= begin
       plain = body
