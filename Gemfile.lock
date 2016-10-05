@@ -1,0 +1,17 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    ruby-msg (1.5.2)
+      ruby-ole (>= 1.2.8)
+      vpim (>= 0.360)
+    ruby-ole (1.2.12)
+    vpim (13.11.11)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  ruby-msg
+
+BUNDLED WITH
+   1.13.2
