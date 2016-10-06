@@ -17,6 +17,13 @@ class Person
     @email ||= (has_name? ? line.match(EMAIL_REGEX)[1] : line).downcase
   end
 
+  def as_json
+    {
+      name: name,
+      email: email
+    }
+  end
+
   private
 
   def line

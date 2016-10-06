@@ -19,4 +19,13 @@ describe Person do
       expect(person.email).to eq('dbalatero@gmail.com')
     end
   end
+
+  describe '#as_json' do
+    it "should return JSON" do
+      expect(person.as_json).to eq(
+        name: "David Balatero",
+        email: "dbalatero@gmail.com"
+      )
+    end
+  end
 end
