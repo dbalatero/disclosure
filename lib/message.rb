@@ -19,6 +19,10 @@ class Message
     @recipient ||= Person.new(msg.to)
   end
 
+  def sent_at
+    @sent_at ||= Time.parse(msg.headers["Date"].first) rescue nil
+  end
+
   def cc
     @cc ||= begin
       temp_comma_replacement = 9679.chr(Encoding::UTF_8)

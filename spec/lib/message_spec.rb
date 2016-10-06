@@ -1,3 +1,4 @@
+require 'time'
 require_relative '../../lib/message'
 
 describe Message do
@@ -63,6 +64,12 @@ describe Message do
 
       expect(message.cc[0].name).to eq("Domingo, Cindy")
       expect(message.cc[0].email).to eq("cindy.domingo@kingcounty.gov")
+    end
+  end
+
+  describe '#sent_at' do
+    it "should return the send date" do
+      expect(message.sent_at).to eq(Time.local(2016, 4, 15, 15, 50, 11))
     end
   end
 end
