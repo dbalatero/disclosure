@@ -9,6 +9,12 @@ class Attachment
     attachment.filename
   end
 
+  def as_json
+    {
+      filename: attachment.filename
+    }
+  end
+
   def write_to(path)
     data = attachment.data
     data.rewind
