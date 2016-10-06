@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'optparse'
+require_relative '../lib/disclosure'
 
 ARGV.push('-h') if ARGV.empty?
 
@@ -50,4 +51,46 @@ opt_parser = OptionParser.new do |opts|
   end
 end
 
-options = opt_parser.parse!(ARGV)
+opt_parser.parse!(ARGV)
+
+missing_options = options.keys.select { |param| options[param].nil? }
+unless missing_options.empty?
+  puts "Missing options: #{missing_options.join(', ')}"
+  puts
+  puts opt_parser.help
+  exit 2
+end
+
+### Processing emails
+
+input_emails = Dir.glob("#{options[:input_directory]}/**/*.msg")
+
+puts "Found #{input_emails.size} emails"
+
+parsed_emails = []
+
+input_emails.each do |email_path|
+  # TODO if we fail parsing a single email, write out the progress so far
+  # to the output json file and allow picking back up where we left off on
+  # next run
+  message = Message.new(email_path)
+
+  # Write attachments out
+  message.attachments.each do |attachment|
+    # TODO convert to PDF using soffice headless?
+    #
+    # TODO handle duplicate clashing filenames, update attachment filename in output
+    # JSON if needed
+    attachment.write_to(File.join(options[:attachment_dir], attachment.filename))
+  end
+
+  parsed_emails << message.as_json
+end
+
+File.open(options[:json_file], "wb") do |output_file|
+  output_file.write(
+    JSON.generate(
+      emails: parsed_emails
+    )
+  )
+end

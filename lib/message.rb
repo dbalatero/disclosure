@@ -11,6 +11,23 @@ class Message
     @msg = Mapi::Msg.open(path)
   end
 
+  def as_json
+    # TODO do we need the HTML body as well?
+    {
+      sender: sender.as_json,
+      recipient: recipient.as_json,
+      sent_at: sent_at,
+      cc: cc.map(&:as_json),
+      subject: subject,
+      headers: headers,
+      attachments: attachments.map(&:as_json),
+      thread_id: thread_id,
+      message_id: message_id,
+      in_reply_to: in_reply_to,
+      plain_body: plain_body
+    }
+  end
+
   def sender
     @sender ||= Person.new(msg.from)
   end
