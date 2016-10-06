@@ -1,4 +1,5 @@
 require 'pry'
+require_relative '../lib/shut_up_backtrace'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
@@ -18,4 +19,10 @@ RSpec.configure do |config|
   config.filter_gems_from_backtrace \
     "rspec",
     "rspec-core"
+
+  config.around do |example|
+    ShutUpBacktrace.backtrace_suppressor do
+      example.run
+    end
+  end
 end
