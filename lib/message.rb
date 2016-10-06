@@ -1,66 +1,9 @@
 require 'mapi/msg'
 require 'pry'
-
-class Attachment
-  attr_reader :attachment
-
-  def initialize(attachment)
-    @attachment = attachment
-  end
-
-  def filename
-    attachment.filename
-  end
-
-  def write_to(path)
-    data = attachment.data
-    data.rewind
-
-    File.open(path, "wb") { |f| f.write(data.read) }
-  end
-end
-
-class Person
-  EMAIL_REGEX = /<(.+?@.+?)>$/
-
-  def initialize(line)
-    @line = line.strip
-  end
-
-  def name
-    return unless has_name?
-
-    @name ||= line
-      .match(/^(.+)\s+#{EMAIL_REGEX}/)[1]
-      .gsub(/"/, '')
-  end
-
-  def email
-    @email ||= (has_name? ? line.match(EMAIL_REGEX)[1] : line).downcase
-  end
-
-  private
-
-  def line
-    @line
-  end
-
-  def has_name?
-    !!line.match(EMAIL_REGEX)
-  end
-end
+require_relative './attachment'
+require_relative './person'
 
 class Message
-  CC_LIST_REGEX = /
-    (?:     # Begin non-capture group
-    (?<=\") # Match a double-quote in a positive lookbehind
-    .+?     # Match one or more characters lazily
-    (?=\")  # Match a double quote in a positive lookahead
-    )       # End non-capture group
-    |       # Or
-    \s\d+   # Match a whitespace character followed by one or more digits
-    /x      # Extended mode
-
   attr_reader :path, :msg
 
   def initialize(path)
@@ -146,6 +89,16 @@ class Message
   end
 
   private
+
+  CC_LIST_REGEX = /
+    (?:     # Begin non-capture group
+    (?<=\") # Match a double-quote in a positive lookbehind
+    .+?     # Match one or more characters lazily
+    (?=\")  # Match a double quote in a positive lookahead
+    )       # End non-capture group
+    |       # Or
+    \s\d+   # Match a whitespace character followed by one or more digits
+    /x      # Extended mode
 
   def body
     @body ||= msg.body_to_mime.to_s
