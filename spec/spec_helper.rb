@@ -14,4 +14,8 @@ RSpec.configure do |config|
   config.order = :random
 
   Kernel.srand config.seed
+
+  config.filter_gems_from_backtrace \
+    "rspec",
+    "rspec-core"
 end
