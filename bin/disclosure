@@ -87,6 +87,8 @@ input_emails.each do |email_path|
   parsed_emails << message.as_json
 end
 
+# TODO group emails by thread id?
+
 File.open(options[:json_file], "wb") do |output_file|
   output_file.write(
     JSON.generate(
