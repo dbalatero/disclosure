@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+ARGV.push('-h') if ARGV.empty?
+
+options = {
+  input_directory: nil,
+  json_file: nil,
+  attachment_dir: nil
+}
+
+opt_parser = OptionParser.new do |opts|
+  opts.banner = "Usage: disclosure [options]"
+
+  opts.separator ""
+  opts.separator "Specific options:"
+
+  opts.on(
+    "-i",
+    "--input DIRECTORY",
+    "The input DIRECTORY of .msg emails you want to parse"
+  ) do |directory|
+    options[:input_directory] = directory
+  end
+
+  opts.on(
+    "-j",
+    "--json FILE",
+    "The JSON FILE to output to."
+  ) do |json_file|
+    options[:json_file] = json_file
+  end
+
+  opts.on(
+    "-a",
+    "--attachments ATTACHMENT_DIR",
+    "The ATTACHMENT_DIR to output to"
+  ) do |attachment_dir|
+    options[:attachment_dir] = attachment_dir
+  end
+
+  opts.on_tail(
+    "-h",
+    "--help",
+    "Show this message"
+  ) do
+    puts opts
+    exit
+  end
+end
+
+options = opt_parser.parse!(ARGV)
