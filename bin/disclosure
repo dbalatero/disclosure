@@ -87,33 +87,42 @@ end
 
 ### Processing emails
 
-input_emails = Dir.glob("#{options[:input_directory]}/**/*.msg").sort
+class MessageParser
+  def initialize(email_paths, **options)
+    @email_paths = email_paths
+    @options = options
+    @parsed_emails = []
+  end
 
-puts "Found #{input_emails.size} emails"
+  def self.parse!(*args)
+    new(*args).parse!
+  end
 
-parsed_emails = []
+  def parse!
+    input_emails.each_with_index do |email_path, i|
+      begin
+        message = Message.new(email_path)
+        handle_message(message)
+      rescue Exception => e
+        puts "Error: unable to parse message at #{email_path}!"
+        puts "use offset of #{i} (-o #{i}) to resume task after resolving this issue"
 
-input_emails[options[:offset] .. -1].each_with_index do |email_path, i|
-  begin
-    message = Message.new(email_path)
-
-    # Write attachments out
-    message.attachments.each do |attachment|
-      # TODO handle duplicate clashing filenames, update attachment filename in output
-      # JSON if needed
-      path = File.join(options[:attachment_dir], attachment.filename)
-      attachment.write_as_pdf_to(path)
+        raise
+      ensure
+        write_json_file!
+      end
     end
+  end
 
-    json = message.as_json
+  private
 
-    parsed_emails << json
-  rescue Exception => e
-    puts "Error: unable to parse message at #{email_path}!"
-    puts "use offset of #{i} (-o #{i}) to resume task after resolving this issue"
+  attr_reader :email_paths, :options, :parsed_emails
 
-    raise
-  ensure
+  def input_emails
+    email_paths[options[:offset] .. -1]
+  end
+
+  def write_json_file!
     # TODO group emails by thread id?
     print "writing #{parsed_emails.size} emails to #{options[:json_file]}..."
 
@@ -124,7 +133,29 @@ input_emails[options[:offset] .. -1].each_with_index do |email_path, i|
         )
       )
     end
+
+    puts "done"
+  end
+
+  def handle_message(message)
+    # Write attachments out
+    message.attachments.each do |attachment|
+      # TODO handle duplicate clashing filenames, update attachment filename in output
+      # JSON if needed
+
+      if attachment.outlook_message?
+        handle_message(attachment.to_message)
+      else
+        path = File.join(options[:attachment_dir], attachment.filename)
+        attachment.write_as_pdf_to(path)
+      end
+    end
+
+    parsed_emails << message.as_json
   end
 end
 
-puts "done"
+input_emails = Dir.glob("#{options[:input_directory]}/**/*.msg").sort
+puts "Found #{input_emails.size} emails"
+
+MessageParser.parse!(input_emails, options)

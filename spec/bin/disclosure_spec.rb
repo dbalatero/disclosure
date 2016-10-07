@@ -44,6 +44,30 @@ describe "disclosure binary" do
     )
   end
 
+  context "parsing attached outlook emails" do
+    let(:email_dir) do
+      File.join(root_dir, "spec", "fixtures", "edge_cases", "inception")
+    end
+
+    it "shouldn't blow up" do
+      result = disclosure(email_dir, output_json, attachment_dir)
+
+      expect(result).to_not match(/Error: unable to parse message/)
+
+      emails = JSON.parse(File.read(output_json))['emails']
+
+      expect(emails.size).to eq(2)
+
+      expect(emails[0]['subject']).to eq(
+        "CFJC update: Project Labor Agreement & targeted local hire"
+      )
+
+      expect(emails[1]['subject']).to eq(
+        "CFJC update - Alder Academy negotiations "
+      )
+    end
+  end
+
   context "failure" do
     let(:garbage_path) { File.join(email_dir, "zz-garbage.msg") }
 

@@ -4,11 +4,14 @@ require_relative './attachment'
 require_relative './person'
 
 class Message
-  attr_reader :path, :msg
+  attr_reader :msg
 
-  def initialize(path)
-    @path = path
-    @msg = Mapi::Msg.open(path)
+  def initialize(path_or_msg)
+    if path_or_msg.is_a?(String)
+      @msg = Mapi::Msg.open(path_or_msg)
+    else
+      @msg = path_or_msg
+    end
   end
 
   def as_json
@@ -42,13 +45,17 @@ class Message
 
   def cc
     @cc ||= begin
-      temp_comma_replacement = 9679.chr(Encoding::UTF_8)
+      if msg.cc.nil?
+        []
+      else
+        temp_comma_replacement = 9679.chr(Encoding::UTF_8)
 
-      msg
-        .cc
-        .gsub(/(".+?),(.+?")/, "\\1#{temp_comma_replacement}\\2")
-        .split(/,\s*/)
-        .map { |line| Person.new(line.gsub(temp_comma_replacement, ',')) }
+        msg
+          .cc
+          .gsub(/(".+?),(.+?")/, "\\1#{temp_comma_replacement}\\2")
+          .split(/,\s*/)
+          .map { |line| Person.new(line.gsub(temp_comma_replacement, ',')) }
+      end
     end
   end
 

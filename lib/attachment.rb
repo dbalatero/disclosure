@@ -1,3 +1,5 @@
+require_relative './message'
+
 class Attachment
   attr_reader :attachment
 
@@ -15,8 +17,19 @@ class Attachment
     }
   end
 
+  def outlook_message?
+    inspect.include?("Outlook Message")
+  end
+
+  def data
+    attachment.data
+  end
+
+  def to_message
+    ::Message.new(attachment.data)
+  end
+
   def write_to(path)
-    data = attachment.data
     data.rewind
 
     File.open(path, "wb") { |f| f.write(data.read) }
