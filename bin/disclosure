@@ -110,10 +110,9 @@ input_emails[options[:offset] .. -1].each_with_index do |email_path, i|
     parsed_emails << json
   rescue Exception => e
     puts "Error: unable to parse message at #{email_path}!"
-    puts "error message: #{e}"
     puts "use offset of #{i} (-o #{i}) to resume task after resolving this issue"
 
-    break
+    raise
   end
 end
 
