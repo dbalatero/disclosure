@@ -8,7 +8,9 @@ ARGV.push('-h') if ARGV.empty?
 options = {
   input_directory: nil,
   json_file: nil,
-  attachment_dir: nil
+  attachment_dir: nil,
+  offset: 0,
+  overwrite: false
 }
 
 opt_parser = OptionParser.new do |opts|
@@ -41,6 +43,22 @@ opt_parser = OptionParser.new do |opts|
     options[:attachment_dir] = attachment_dir
   end
 
+  opts.on(
+    "-o",
+    "--offset OFFSET",
+    "An integer offset from which to start parsing"
+  ) do |offset|
+    options[:offset] = offset
+  end
+
+  opts.on(
+    "-f",
+    "--force-overwrite",
+    "if set overwrites the output JSON file, otherwise appends"
+  ) do
+    options[:overwrite] = true
+  end
+
   opts.on_tail(
     "-h",
     "--help",
@@ -54,6 +72,12 @@ end
 opt_parser.parse!(ARGV)
 
 missing_options = options.keys.select { |param| options[param].nil? }
+
+if !options[:overwrite] && File.file?(options[:json_file])
+  puts "cowardly refusal to overwrite json file at #{options[:json_file]}"
+  exit 1
+end
+
 unless missing_options.empty?
   puts "Missing options: #{missing_options.join(', ')}"
   puts
@@ -69,26 +93,34 @@ puts "Found #{input_emails.size} emails"
 
 parsed_emails = []
 
-input_emails.each do |email_path|
-  # TODO if we fail parsing a single email, write out the progress so far
-  # to the output json file and allow picking back up where we left off on
-  # next run
-  message = Message.new(email_path)
+input_emails[options[:offset] .. -1].each_with_index do |email_path, i|
+  begin
+    message = Message.new(email_path)
 
-  # Write attachments out
-  message.attachments.each do |attachment|
-    # TODO convert to PDF using soffice headless?
-    #
-    # TODO handle duplicate clashing filenames, update attachment filename in output
-    # JSON if needed
-    attachment.write_to(File.join(options[:attachment_dir], attachment.filename))
+    # Write attachments out
+    message.attachments.each do |attachment|
+      # TODO convert to PDF using soffice headless?
+      #
+      # TODO handle duplicate clashing filenames, update attachment filename in output
+      # JSON if needed
+      attachment.write_to(File.join(options[:attachment_dir], attachment.filename))
+    end
+
+    json = message.as_json
+
+    parsed_emails << json
+  rescue Exception => e
+    puts "Error: unable to parse message at #{email_path}!"
+    puts "error message: #{e}"
+    puts "use offset of #{i} (-o #{i}) to resume task after resolving this issue"
+
+    break
   end
-
-  parsed_emails << message.as_json
 end
 
 # TODO group emails by thread id?
 
+print "writing #{parsed_emails.size} emails to #{options[:json_file]}..."
 File.open(options[:json_file], "wb") do |output_file|
   output_file.write(
     JSON.generate(
@@ -96,3 +128,4 @@ File.open(options[:json_file], "wb") do |output_file|
     )
   )
 end
+puts "done"

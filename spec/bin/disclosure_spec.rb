@@ -43,4 +43,36 @@ describe "disclosure binary" do
       "CFJC update - Alder Academy negotiations "
     )
   end
+
+  context "failure" do
+    let(:garbage_path) { File.join(email_dir, "zz-garbage.msg") }
+
+    before do
+      File.open(garbage_path, "wb") { |f| f.write "garbage all garbage" }
+    end
+
+    after do
+      FileUtils.rm(garbage_path)
+    end
+
+    it "stops parsing" do
+      result = disclosure(email_dir, output_json, attachment_dir)
+
+      expect(result).to match(/Error: unable to parse message/)
+      expect(result).to match(/zz-garbage\.msg!/)
+      expect(result).to match(/use offset of 2 \(-o 2\)/)
+
+      emails = JSON.parse(File.read(output_json))['emails']
+
+      expect(emails.size).to eq(2)
+
+      expect(emails[0]['subject']).to eq(
+        "CFJC update: Project Labor Agreement & targeted local hire"
+      )
+
+      expect(emails[1]['subject']).to eq(
+        "CFJC update - Alder Academy negotiations "
+      )
+    end
+  end
 end
