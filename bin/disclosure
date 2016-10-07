@@ -99,11 +99,10 @@ input_emails[options[:offset] .. -1].each_with_index do |email_path, i|
 
     # Write attachments out
     message.attachments.each do |attachment|
-      # TODO convert to PDF using soffice headless?
-      #
       # TODO handle duplicate clashing filenames, update attachment filename in output
       # JSON if needed
-      attachment.write_to(File.join(options[:attachment_dir], attachment.filename))
+      path = File.join(options[:attachment_dir], attachment.filename)
+      attachment.write_as_pdf_to(path)
     end
 
     json = message.as_json
