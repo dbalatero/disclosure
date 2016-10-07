@@ -69,7 +69,7 @@ describe Message do
 
   describe '#sent_at' do
     it "should return the send date" do
-      expect(message.sent_at).to eq(Time.local(2016, 4, 15, 15, 50, 11))
+      expect(message.sent_at).to eq(Time.parse("15 Apr 2016, 15:50:11 -0700"))
     end
   end
 end
