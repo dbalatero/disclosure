@@ -2,7 +2,7 @@ require 'time'
 require_relative '../../lib/message'
 
 describe Message do
-  subject(:message) { Message.new('spec/fixtures/test.msg') }
+  subject(:message) { Message.new('spec/fixtures/basic/test.msg') }
 
   describe '#subject' do
     it "should return a subject" do

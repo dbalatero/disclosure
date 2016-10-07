@@ -5,7 +5,7 @@ describe "disclosure binary" do
   let(:root_dir) { File.join(File.dirname(__FILE__), "..", "..") }
   let(:tmp_dir) { File.join(root_dir, "tmp") }
   let(:attachment_dir) { File.join(tmp_dir, "attachments") }
-  let(:email_dir) { File.join(root_dir, "spec", "fixtures") }
+  let(:email_dir) { File.join(root_dir, "spec", "fixtures", "basic") }
   let(:output_json) { File.join(tmp_dir, "emails.json") }
 
   before do

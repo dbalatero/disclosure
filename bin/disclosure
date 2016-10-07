@@ -113,17 +113,18 @@ input_emails[options[:offset] .. -1].each_with_index do |email_path, i|
     puts "use offset of #{i} (-o #{i}) to resume task after resolving this issue"
 
     raise
+  ensure
+    # TODO group emails by thread id?
+    print "writing #{parsed_emails.size} emails to #{options[:json_file]}..."
+
+    File.open(options[:json_file], "wb") do |output_file|
+      output_file.write(
+        JSON.generate(
+          emails: parsed_emails
+        )
+      )
+    end
   end
 end
 
-# TODO group emails by thread id?
-
-print "writing #{parsed_emails.size} emails to #{options[:json_file]}..."
-File.open(options[:json_file], "wb") do |output_file|
-  output_file.write(
-    JSON.generate(
-      emails: parsed_emails
-    )
-  )
-end
 puts "done"
