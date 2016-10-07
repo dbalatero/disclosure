@@ -87,7 +87,7 @@ end
 
 ### Processing emails
 
-input_emails = Dir.glob("#{options[:input_directory]}/**/*.msg")
+input_emails = Dir.glob("#{options[:input_directory]}/**/*.msg").sort
 
 puts "Found #{input_emails.size} emails"
 
