@@ -11,6 +11,7 @@ class MessageParser
 
   def parse!
     input_emails.each_with_index do |email_path, i|
+      puts "parsing email ##{i}"
       begin
         message = Message.new(email_path)
         handle_message(message)
@@ -19,11 +20,13 @@ class MessageParser
         puts "Error: unable to parse message at #{email_path}!"
         puts "use offset of #{new_offset} (-o #{new_offset}) to resume task after resolving this issue"
 
-        raise
-      ensure
         write_json_file!
+
+        raise
       end
     end
+
+    write_json_file!
   end
 
   private
