@@ -1,4 +1,5 @@
 require 'pry'
+require 'pry-stack_explorer'
 require_relative '../lib/shut_up_backtrace'
 
 RSpec.configure do |config|
