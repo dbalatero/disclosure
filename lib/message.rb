@@ -23,12 +23,16 @@ class Message
       cc: cc.map(&:as_json),
       subject: subject,
       headers: headers,
-      attachments: attachments.map(&:as_json),
+      attachments: attachments_without_emails.map(&:as_json),
       thread_id: thread_id,
       message_id: message_id,
       in_reply_to: in_reply_to,
       plain_body: plain_body
     }
+  end
+
+  def attachments_without_emails
+    attachments.reject(&:outlook_message?)
   end
 
   def sender
