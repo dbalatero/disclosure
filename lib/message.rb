@@ -103,12 +103,8 @@ class Message
 
   def plain_body
     @plain_body ||= begin
-      plain = body
-        .split(boundary)
-        .detect { |chunk| chunk.include?("Content-Type: text/plain") }
-        .to_s
+      plain = part_for('text/plain').body.dup
 
-      plain.gsub!(/Content-Type: text\/plain/, '')
       plain.gsub!(/\r/, '')
       plain.gsub!(/\n\s+\n/, "\n\n")
       plain.gsub!(/\n{3,}/, "\n\n")
@@ -122,6 +118,10 @@ class Message
 
   private
 
+  def part_for(type)
+    msg.body_to_mime.parts.detect { |part| part.content_type == type }
+  end
+
   CC_LIST_REGEX = /
     (?:     # Begin non-capture group
     (?<=\") # Match a double-quote in a positive lookbehind
@@ -131,10 +131,6 @@ class Message
     |       # Or
     \s\d+   # Match a whitespace character followed by one or more digits
     /x      # Extended mode
-
-  def body
-    @body ||= msg.body_to_mime.to_s
-  end
 
   def boundary
     body.match(/; boundary="(.+?)"/)[1]
