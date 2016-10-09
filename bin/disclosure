@@ -88,43 +88,6 @@ end
 ### Processing emails
 
 input_emails = Dir.glob("#{options[:input_directory]}/**/*.msg").sort
-
 puts "Found #{input_emails.size} emails"
 
-parsed_emails = []
-
-input_emails[options[:offset] .. -1].each_with_index do |email_path, i|
-  begin
-    message = Message.new(email_path)
-
-    # Write attachments out
-    message.attachments.each do |attachment|
-      # TODO handle duplicate clashing filenames, update attachment filename in output
-      # JSON if needed
-      path = File.join(options[:attachment_dir], attachment.filename)
-      attachment.write_as_pdf_to(path)
-    end
-
-    json = message.as_json
-
-    parsed_emails << json
-  rescue Exception => e
-    puts "Error: unable to parse message at #{email_path}!"
-    puts "use offset of #{i} (-o #{i}) to resume task after resolving this issue"
-
-    raise
-  ensure
-    # TODO group emails by thread id?
-    print "writing #{parsed_emails.size} emails to #{options[:json_file]}..."
-
-    File.open(options[:json_file], "wb") do |output_file|
-      output_file.write(
-        JSON.generate(
-          emails: parsed_emails
-        )
-      )
-    end
-  end
-end
-
-puts "done"
+MessageParser.parse!(input_emails, options)
