@@ -10,7 +10,7 @@ class Person
 
     @name ||= line
       .match(/^(.+)\s+#{EMAIL_REGEX}/)[1]
-      .gsub(/"/, '')
+      &.gsub(/"/, '')
   end
 
   def email
