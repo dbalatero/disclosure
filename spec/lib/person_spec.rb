@@ -12,6 +12,11 @@ describe Person do
       person = Person.new("dbalatero@gmail.com")
       expect(person.name).to be_nil
     end
+
+    it "should handle joe mcdermott's email address" do
+      person = Person.new "<joe.mcdermott@kingcounty.gov>"
+      expect(person.name).to be_nil
+    end
   end
 
   describe '#email' do

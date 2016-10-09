@@ -9,7 +9,8 @@ class Person
     return unless has_name?
 
     @name ||= line
-      .match(/^(.+)\s+#{EMAIL_REGEX}/)[1]
+      .match(/^(.+)\s+#{EMAIL_REGEX}/)
+      &.[](1)
       &.gsub(/"/, '')
   end
 
