@@ -21,6 +21,10 @@ class Attachment
     inspect.include?("Outlook Message")
   end
 
+  def valid?
+    !data.is_a?(Ole::Storage::Dirent)
+  end
+
   def data
     attachment.data
   end
@@ -30,7 +34,7 @@ class Attachment
   end
 
   def write_to(path)
-    data.rewind
+    data.rewind rescue binding.pry
 
     File.open(path, "wb") { |f| f.write(data.read) }
   end

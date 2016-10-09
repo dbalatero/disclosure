@@ -72,7 +72,10 @@ class Message
   end
 
   def attachments
-    @attachments ||= msg.attachments.map { |attachment| Attachment.new(attachment) }
+    @attachments ||= msg
+      .attachments
+      .map { |attachment| Attachment.new(attachment) }
+      .select(&:valid?)
   end
 
   def thread_id
