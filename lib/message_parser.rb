@@ -15,8 +15,9 @@ class MessageParser
         message = Message.new(email_path)
         handle_message(message)
       rescue Exception => e
+        new_offset = options[:offset] + i
         puts "Error: unable to parse message at #{email_path}!"
-        puts "use offset of #{i} (-o #{i}) to resume task after resolving this issue"
+        puts "use offset of #{new_offset} (-o #{new_offset}) to resume task after resolving this issue"
 
         raise
       ensure
