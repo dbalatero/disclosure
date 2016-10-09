@@ -122,7 +122,14 @@ class Message
   private
 
   def part_for(type)
-    msg.body_to_mime.parts.detect { |part| part.content_type == type }
+    case msg.body_to_mime.content_type
+    when "multipart/alternative"
+      msg.body_to_mime.parts.detect { |part| part.content_type == type }
+    when type
+      msg.body_to_mime
+    else
+      nil
+    end
   end
 
   CC_LIST_REGEX = /
