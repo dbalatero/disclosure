@@ -48,7 +48,7 @@ opt_parser = OptionParser.new do |opts|
     "--offset OFFSET",
     "An integer offset from which to start parsing"
   ) do |offset|
-    options[:offset] = offset
+    options[:offset] = offset.to_i
   end
 
   opts.on(
