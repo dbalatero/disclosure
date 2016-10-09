@@ -17,8 +17,8 @@ class Message
   def as_json
     # TODO do we need the HTML body as well?
     {
-      sender: sender.as_json,
-      recipient: recipient.as_json,
+      sender: sender&.as_json,
+      recipient: recipient&.as_json,
       sent_at: sent_at,
       cc: cc.map(&:as_json),
       subject: subject,
@@ -36,11 +36,11 @@ class Message
   end
 
   def sender
-    @sender ||= Person.new(msg.from)
+    @sender ||= msg.from && Person.new(msg.from)
   end
 
   def recipient
-    @recipient ||= Person.new(msg.to)
+    @recipient ||= msg.to && Person.new(msg.to)
   end
 
   def sent_at
