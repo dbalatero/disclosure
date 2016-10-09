@@ -56,15 +56,17 @@ describe "disclosure binary" do
 
       emails = JSON.parse(File.read(output_json))['emails']
 
-      expect(emails.size).to eq(2)
+      expect(emails.size).to eq(7)
 
-      expect(emails[0]['subject']).to eq(
-        "CFJC update: Project Labor Agreement & targeted local hire"
-      )
-
-      expect(emails[1]['subject']).to eq(
-        "CFJC update - Alder Academy negotiations "
-      )
+      expect(emails.map { |e| e["subject"] }).to eq [
+        'talking points on Alder replacement project',
+        'thank you',
+        'This is an embarassment',
+        'TV stories on Alder protest',
+        'Stop the new Youth Jail!',
+        'STOP The New Youth Jail!',
+        '#10'
+      ]
     end
   end
 

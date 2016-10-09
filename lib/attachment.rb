@@ -35,8 +35,12 @@ class Attachment
     File.open(path, "wb") { |f| f.write(data.read) }
   end
 
+  def can_convert_to_pdf?
+    %w[doc docx ppt pptx xls xlsx rtf txt].include?(File.extname(filename))
+  end
+
   def write_as_pdf_to(final_path)
-    return write_to(final_path) if File.extname(filename) == ".pdf"
+    return write_to(final_path) unless can_convert_to_pdf?
 
     original_tmp_path = "/tmp/#{filename}"
     pdf_tmp_path = "/tmp/#{File.basename(filename, '.*')}.pdf"
