@@ -8,7 +8,8 @@ describe Attachment do
   describe '#as_json' do
     it "should return the filename" do
       expect(attachment.as_json).to eq(
-        filename: "b45cffe084dd3d20d928bee85e7b0f21-haha.pdf"
+        filename: "b45cffe084dd3d20d928bee85e7b0f21-haha.pdf",
+        original_filename: 'haha.pdf'
       )
     end
   end

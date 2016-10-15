@@ -11,7 +11,8 @@ class Attachment
 
   def as_json
     {
-      filename: filename
+      filename: filename,
+      original_filename: original_filename
     }
   end
 
