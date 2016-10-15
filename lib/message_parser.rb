@@ -61,8 +61,7 @@ class MessageParser
       if attachment.outlook_message?
         handle_message(attachment.to_message)
       else
-        path = File.join(options[:attachment_dir], attachment.filename)
-        attachment.write_as_pdf_to(path)
+        attachment.write_as_pdf_to_dir(options[:attachment_dir])
       end
     end
 
